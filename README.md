@@ -1,1 +1,45 @@
-# CarWorkshop_Management_System
+# Car Workshop Management System
+
+A simple PHP–MySQL based Car Workshop Management System built to manage client appointments, mechanics, and scheduling with validation and conflict checks.
+
+This project is designed to run on **XAMPP** using **Apache** and **MySQL**.
+
+---
+## 🔗 Quick Access Links
+
+Once installed, you can access the system using:
+
+### 👉 **Main Application**
+http://localhost/CarWorkshop_Management_System/index.php
+
+### 👉 **phpMyAdmin (for database import)**
+http://localhost/phpmyadmin/index.php
+
+
+## 🚀 Features
+
+- Client appointment booking  
+- Mechanic availability checking  
+- Duplicate booking prevention  
+- Time-slot based scheduling  
+- Secure backend validation (PHP + PDO)  
+- Easy to install and run locally  
+
+---
+
+## 🛠 Requirements
+
+- XAMPP (PHP 8+, MySQL, Apache)
+- Web browser (Chrome, Firefox, etc.)
+- phpMyAdmin (included with XAMPP)
+
+---
+
+## 📂 Project Setup (XAMPP)
+
+### **1. Download or Clone the Repository**
+
+Clone it into your `htdocs` folder:
+
+```bash
+C:\xampp\htdocs\CarWorkshop_Management_System
