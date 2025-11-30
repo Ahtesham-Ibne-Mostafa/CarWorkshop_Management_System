@@ -2,16 +2,95 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <meta charset="utf-8">
   <title>Car Workshop – Book Appointment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root { --primary:#0d6efd; --bg:#f7f9fc; --card:#fff; --text:#222; --muted:#666; }
-    body { margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
-    header { background:var(--primary); color:#fff; padding:16px 20px; }
-    .wrap { max-width:860px; margin:24px auto; padding:0 16px; }
-    .card { background:var(--card); border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.06); padding:20px; }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('image/garage.png') no-repeat center center fixed;
+        background-size: cover;
+        filter: blur(3px);
+        z-index: -2;
+      }
+
+      footer {
+        text-align: center;
+        padding: 16px;
+        margin-top: 40px;
+        font-size: 14px;
+        color: #fff;
+        background: rgba(0,0,0,0.7); /* semi-transparent dark bar */
+        position: relative;
+        bottom: 0;
+        width: 100%;
+        border-top: 1px solid rgba(255,255,255,0.2);
+      }
+
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.3); /* optional dark overlay */
+        z-index: -1;
+      }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+       header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px; /* define header height */
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 16px 20px;
+            box-sizing: border-box;
+            z-index: 1000;
+          }
+
+          .wrap {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 100px 16px 24px; /* matches header height */
+          }
+
+
+* {
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+
     label { font-size:14px; color:var(--muted); display:block; margin-bottom:6px; }
     input, select { width:100%; padding:10px; border:1px solid #dfe3eb; border-radius:8px; font-size:14px; }
     .full { grid-column:1 / -1; }
@@ -24,7 +103,17 @@
   </style>
 </head>
 <body>
-  <header><h1>Car Workshop – Online Appointment</h1></header>
+  <header style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>Speed Garage – Book Appointment</h1>
+    <a href="admin.php" 
+       style="background:white; color:#0d6efd; padding:10px 16px; border-radius:8px; 
+              text-decoration:none; font-weight:600; box-shadow:0 2px 6px rgba(0,0,0,.15);">
+       Admin Login
+    </a>
+</header>
+<div class="wrap">
+<div class="background-blur"></div>
+
   <div class="wrap">
     <div class="card">
       <div class="grid">
@@ -164,5 +253,12 @@
       }
     });
   </script>
+  </div>
+
+  <footer>
+  <p>&copy; <?php echo date("Y"); ?> Ahtesham. All rights reserved.</p>
+  <p>Last modified: <?php echo date("l, d F Y h:i A"); ?></p>
+</footer>
+
 </body>
 </html>

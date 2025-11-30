@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 18, 2025 at 07:12 PM
+-- Host: 127.0.0.1
+-- Generation Time: Nov 30, 2025 at 09:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Database: `carworkshop_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`id`, `username`, `password_hash`, `created_at`) VALUES
+(1, 'admin', '$2y$10$MDcn6p.3GUqKM7K7qcTygeWYSer2ywJnIAnCiQd9JG0zLCfpc8DNq', '2025-11-30 18:38:32'),
+(2, 'admin1', '$2y$10$EN.jpXDH9l1DBmDC//oKjerxkjCyw33hAn8Muj0hsLGhm8/M5H.ny', '2025-11-30 18:45:19'),
+(3, 'admin3', '$2y$10$Mt8Kgzpn94qvp3/MXDy3QOC3Ba1bkTawh5txE7mF10ctSC15ATUgi', '2025-11-30 18:45:35');
 
 -- --------------------------------------------------------
 
@@ -47,16 +69,7 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `client_name`, `address`, `phone`, `car_license`, `car_engine`, `appointment_date`, `mechanic_id`, `status`, `created_at`, `updated_at`, `slot`) VALUES
-(4, 'dfdf', 'fdsfsddsf', '01621924444', 'dfsfsdsd', 'dsfdsds', '2025-11-19', 1, 'approved', '2025-11-18 17:08:32', '2025-11-18 17:08:32', '9-11'),
-(5, 'dfdf', 'fdsfsddsf', '01621924443', 'dfsfsdsd', 'dsfdsds', '2025-11-19', 1, 'approved', '2025-11-18 17:08:57', '2025-11-18 17:08:57', '9-11'),
-(6, 'dfdf', 'fdsfsddsf', '01621924449', 'dfsfsdsd', 'dsfdsds', '2025-11-19', 1, 'approved', '2025-11-18 17:09:15', '2025-11-18 17:09:15', '9-11'),
-(7, 'dfdf', 'fdsfsddsf', '01621924442', 'dfsfsdsd', 'dsfdsds', '2025-11-19', 1, 'approved', '2025-11-18 17:09:22', '2025-11-18 17:09:22', '9-11'),
-(8, 'dfdf', 'fdsfsddsf', '0162192456655', 'dfsfsdsd', 'dsfdsds', '2025-11-21', 2, 'approved', '2025-11-18 17:13:54', '2025-11-18 17:13:54', '9-11'),
-(9, 'dfdf', 'fdsfsddsf', '0162192456657', 'dfsfsdsd', 'dsfdsds', '2025-11-21', 2, 'approved', '2025-11-18 17:13:58', '2025-11-18 17:13:58', '9-11'),
-(10, 'dfdf', 'fdsfsddsf', '0162192456657', 'dfsfsdsd', 'dsfdsds', '2025-11-18', 1, 'approved', '2025-11-18 17:14:17', '2025-11-18 17:14:17', '9-11'),
-(11, 'dfdf', 'fdsfsddsf', '0162192456555', 'dfsfsdsd', 'dsfdsds', '2025-11-18', 1, 'approved', '2025-11-18 17:14:23', '2025-11-18 17:14:23', '9-11'),
-(12, 'dfdf', 'fsgsf', '01998440309', 'fsgsf', 'fgsgfssgf', '2025-11-20', 1, 'approved', '2025-11-18 18:10:31', '2025-11-18 18:10:31', '9-11'),
-(13, 'dfdf', 'fsgsf', '01998440308', 'fsgsf', 'fgsgfssgf', '2025-11-20', 1, 'approved', '2025-11-18 18:10:54', '2025-11-18 18:10:54', '11.30-1.30');
+(12, 'dfdf', 'fsgsf', '01998440309', 'fsgsf', 'fgsgfssgf', '2025-11-20', 1, 'approved', '2025-11-18 18:10:31', '2025-11-18 18:10:31', '9-11');
 
 -- --------------------------------------------------------
 
@@ -87,6 +100,13 @@ INSERT INTO `mechanics` (`id`, `name`, `max_daily_capacity`, `is_active`) VALUES
 --
 
 --
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
 -- Indexes for table `appointments`
 --
 ALTER TABLE `appointments`
@@ -105,10 +125,16 @@ ALTER TABLE `mechanics`
 --
 
 --
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `mechanics`

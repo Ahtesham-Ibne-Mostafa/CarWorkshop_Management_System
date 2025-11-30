@@ -1,125 +1,271 @@
-<?php require_once 'config.php'; ?>
+<?php
+require_once 'config.php';
+session_start();
+
+$pdo = db();
+$message = "";
+
+// --- Handle Login ---
+if (isset($_POST['login'])) {
+    $username = sanitize($_POST['username']);
+    $password = $_POST['password'];
+    $stmt = $pdo->prepare("SELECT id,password_hash FROM admins WHERE username=:u LIMIT 1");
+    $stmt->execute([':u'=>$username]);
+    $admin = $stmt->fetch();
+    if ($admin && password_verify($password,$admin['password_hash'])) {
+        $_SESSION['admin_id'] = $admin['id'];
+    } else {
+        $message = "⚠️ Invalid credentials.";
+    }
+}
+
+// --- Handle Logout ---
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: admin.php");
+    exit;
+}
+
+// --- Handle Appointment Update ---
+if (isset($_POST['update_appt']) && isset($_SESSION['admin_id'])) {
+    $id = (int)$_POST['appointment_id'];
+    $newDate = sanitize($_POST['appointment_date']);
+    $newSlot = sanitize($_POST['slot']);
+    $newMech = (int)$_POST['mechanic_id'];
+
+    try {
+        $stmt = $pdo->prepare("UPDATE appointments 
+                               SET appointment_date=:d, slot=:s, mechanic_id=:m 
+                               WHERE id=:id");
+        $stmt->execute([':d'=>$newDate, ':s'=>$newSlot, ':m'=>$newMech, ':id'=>$id]);
+        $message = "✅ Appointment updated successfully.";
+    } catch (Exception $e) {
+        $message = "⚠️ Update failed.";
+    }
+}
+
+// --- Handle Appointment Delete ---
+if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
+    $id = (int)$_POST['appointment_id'];
+    try {
+        $stmt = $pdo->prepare("DELETE FROM appointments WHERE id=:id");
+        $stmt->execute([':id'=>$id]);
+        $message = "🗑️ Appointment deleted successfully.";
+    } catch (Exception $e) {
+        $message = "⚠️ Delete failed.";
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Admin – Appointments</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#f8fafc; color:#222; margin:0; }
-    header { background:#111827; color:#fff; padding:14px 16px; }
-    .wrap { max-width:1000px; margin:20px auto; padding:0 16px; }
-    table { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 4px 16px rgba(0,0,0,.06); }
-    th, td { padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:left; }
-    th { background:#f3f4f6; font-weight:600; }
-    select, input[type="date"] { padding:6px 8px; border:1px solid #d1d5db; border-radius:6px; }
-    button { padding:6px 10px; border:none; background:#2563eb; color:#fff; border-radius:6px; cursor:pointer; }
-    .row { display:flex; gap:10px; margin:12px 0; }
-    .notice { margin-top:12px; padding:10px; border-radius:8px; display:none; }
+
+      .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('image/admin.png') no-repeat center center fixed;
+        background-size: cover;
+        filter: blur(3px); /* subtle blur */
+        z-index: -2;
+      }
+    footer {
+        text-align: center;
+        padding: 16px;
+        margin-top: 40px;
+        font-size: 14px;
+        color: #fff;
+        background: rgba(0,0,0,0.7); /* semi-transparent dark bar */
+        position: relative;
+        bottom: 0;
+        width: 100%;
+        border-top: 1px solid rgba(255,255,255,0.2);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.3); /* dark overlay for readability */
+        z-index: -1;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 70px; /* define header height */
+        background: rgba(17,24,39,0.9);
+        color: #fff;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+        box-sizing: border-box;
+        z-index: 1000;
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 100px auto 24px; /* push content down below header */
+        padding: 20px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      }
+
+      /* Fix login centering */
+      .centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 70px); /* subtract header height */
+        margin-top: 70px; /* push below header */
+      }
+
+
+
+    h2,h3 { margin-top:0; }
+    input, select { padding:8px; margin:4px 0; border:1px solid #ccc; border-radius:6px; width:100%; }
+    button { padding:6px 12px; border:none; background:#2563eb; color:#fff; border-radius:6px; cursor:pointer; }
+    button:hover { background:#1e4ed8; }
+    .link-btn { background:#fff; color:#0d6efd; padding:6px 12px; border-radius:6px; text-decoration:none; font-weight:600; border:1px solid #0d6efd; }
+    .notice { margin:12px 0; padding:10px; border-radius:8px; background:#e7fff0; color:#065f46; }
     .error { background:#ffe7e7; color:#b00020; }
-    .ok { background:#e7fff0; color:#065f46; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
+    th { background:#f3f4f6; }
+    .actions { display:flex; gap:8px; }
+    .delete-btn { background:#dc2626; }
   </style>
 </head>
 <body>
-  <header><h2>Admin – Appointment List</h2></header>
-  <div class="wrap">
-    <div class="row">
-      <input type="date" id="filter_date">
-      <button id="reload">Reload</button>
+<header>
+  <h1>Speed Garage - Admin Panel</h1>
+  <div>
+    <?php if(!isset($_SESSION['admin_id'])): ?>
+      <a href="index.php" class="link-btn">⬅ Back to Booking Page</a>
+    <?php else: ?>
+      <a href="admin.php?logout=1" class="link-btn">Logout</a>
+    <?php endif; ?>
+  </div>
+</header>
+<div class="background-blur"></div>
+
+<?php if (!isset($_SESSION['admin_id'])): ?>
+  <!-- Centered Login -->
+  <div class="centered">
+    <div class="wrap" style="max-width:400px;">
+      <?php if ($message): ?>
+        <div class="notice"><?= htmlspecialchars($message) ?></div>
+      <?php endif; ?>
+      <h3>Admin Login</h3>
+    <form method="POST" autocomplete="off">
+      <input type="text" name="username" placeholder="Username" required autocomplete="off" value="">
+      <input type="password" name="password" placeholder="Password" required autocomplete="off" value="">
+      <button type="submit" name="login">Login</button>
+    </form>
+
     </div>
-    <div id="notice" class="notice"></div>
-    <table id="appt_table">
-      <thead>
-        <tr>
-          <th>ID</th><th>Client</th><th>Phone</th><th>Car Reg</th>
-          <th>Date</th><th>Slot</th><th>Mechanic</th><th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
   </div>
 
-  <script>
-    const tbody = document.querySelector('#appt_table tbody');
-    const notice = document.getElementById('notice');
+<?php else: ?>
+  <!-- Appointment List -->
+  <div class="wrap">
+    <?php if ($message): ?>
+      <div class="notice"><?= htmlspecialchars($message) ?></div>
+    <?php endif; ?>
+    <h3>Appointments</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Client</th><th>Address</th><th>Phone</th>
+          <th>Car Reg</th><th>Car Engine</th><th>Date</th>
+          <th>Slot</th><th>Mechanic</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $q = "SELECT a.id,a.client_name,a.address,a.phone,a.car_license,a.car_engine,
+                     a.appointment_date,a.slot,a.status,
+                     m.name AS mechanic_name,m.id AS mechanic_id
+              FROM appointments a
+              JOIN mechanics m ON m.id=a.mechanic_id
+              ORDER BY a.appointment_date DESC";
+        foreach ($pdo->query($q) as $a): ?>
+          <tr>
+            <form method="POST">
+              <td><?= $a['id'] ?><input type="hidden" name="appointment_id" value="<?= $a['id'] ?>"></td>
+              <td><?= htmlspecialchars($a['client_name']) ?></td>
+              <td><?= htmlspecialchars($a['address']) ?></td>
+              <td><?= htmlspecialchars($a['phone']) ?></td>
+              <td><?= htmlspecialchars($a['car_license']) ?></td>
+              <td><?= htmlspecialchars($a['car_engine']) ?></td>
+              <td><input type="date" name="appointment_date" value="<?= $a['appointment_date'] ?>"></td>
+              <td>
+                <select name="slot">
+                  <option value="9-11" <?= $a['slot']=='9-11'?'selected':'' ?>>9:00 – 11:00</option>
+                  <option value="11.30-1.30" <?= $a['slot']=='11.30-1.30'?'selected':'' ?>>11:30 – 1:30</option>
+                  <option value="2-4" <?= $a['slot']=='2-4'?'selected':'' ?>>2:00 – 4:00</option>
+                  <option value="4.30-6.30" <?= $a['slot']=='4.30-6.30'?'selected':'' ?>>4:30 – 6:30</option>
+                </select>
+              </td>
+              <td>
+                <select name="mechanic_id">
+                  <?php
+                  $mechs = $pdo->query("SELECT id,name FROM mechanics WHERE is_active=1")->fetchAll();
+                  foreach ($mechs as $m) {
+                      $sel = $m['id']==$a['mechanic_id'] ? "selected" : "";
+                      echo "<option value='{$m['id']}' $sel>".htmlspecialchars($m['name'])."</option>";
+                  }
+                  ?>
+                </select>
+              </td>
+              <td><?= htmlspecialchars($a['status']) ?></td>
+              <td>
+                <div class="actions">
+                  <button type="submit" name="update_appt">Save</button>
+                  <button type="submit" name="delete_appt" class="delete-btn">Delete</button>
+                </div>
+              </td>
+            </form>
+          </tr>
+        <?php endforeach;?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+</div>
 
-    function showError(msg){ notice.className='notice error'; notice.textContent=msg; notice.style.display='block'; }
-    function showOk(msg){ notice.className='notice ok'; notice.textContent=msg; notice.style.display='block'; }
-
-    async function load(dateFilter='') {
-      tbody.innerHTML = '';
-      try {
-        const res = await fetch('admin_list.php');
-        const data = await res.json();
-        const rows = data.appointments.filter(a => !dateFilter || a.appointment_date === dateFilter);
-        for (const a of rows) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${a.id}</td>
-            <td>${a.client_name}</td>
-            <td>${a.phone}</td>
-            <td>${a.car_license}</td>
-            <td><input type="date" value="${a.appointment_date}" data-id="${a.id}" class="date"></td>
-            <td>
-              <select data-id="${a.id}" class="slot">
-                <option value="9-11">9:00 – 11:00</option>
-                <option value="11.30-1.30">11:30 – 1:30</option>
-                <option value="2-4">2:00 – 4:00</option>
-                <option value="4.30-6.30">4:30 – 6:30</option>
-              </select>
-            </td>
-            <td><select data-id="${a.id}" class="mech"></select></td>
-            <td><button data-id="${a.id}" class="save">Save</button></td>
-          `;
-          tbody.appendChild(tr);
-
-          // set current slot
-          tr.querySelector('.slot').value = a.slot;
-
-          // load mechanics for that date
-          const selDate = tr.querySelector('.date').value;
-          const mechSel = tr.querySelector('.mech');
-          const mRes = await fetch(`get_mechanics.php?date=${encodeURIComponent(selDate)}`);
-          const mData = await mRes.json();
-          mData.mechanics.forEach(m => {
-            const opt = document.createElement('option');
-            opt.value = m.id;
-            opt.textContent = `${m.name}`;
-            mechSel.appendChild(opt);
-          });
-          mechSel.value = a.mechanic_id; // set current mechanic
-        }
-
-        tbody.addEventListener('click', async (e) => {
-          if (e.target.classList.contains('save')) {
-            const id = e.target.dataset.id;
-            const row = e.target.closest('tr');
-            const newDate = row.querySelector('.date').value;
-            const newMech = row.querySelector('.mech').value;
-            const newSlot = row.querySelector('.slot').value;
-            try {
-              const res = await fetch('admin_update.php', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: new URLSearchParams({ appointment_id: id, appointment_date: newDate, mechanic_id: newMech, slot: newSlot }).toString()
-              });
-              const j = await res.json();
-              if (res.ok) showOk('Appointment updated'); else showError(j.error || 'Update failed');
-              load(document.getElementById('filter_date').value);
-            } catch (err) { showError('Network error'); }
-          }
-        });
-
-      } catch (err) {
-        showError('Failed to load appointments.');
-      }
-    }
-
-    document.getElementById('reload').addEventListener('click', () => {
-      load(document.getElementById('filter_date').value);
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('input[name="username"], input[name="password"]').forEach(el => {
+      el.value = ""; // force empty
     });
+  });
+</script>
+<footer>
+  <p>&copy; <?php echo date("Y"); ?> Ahtesham. All rights reserved.</p>
+  <p>Last modified: <?php echo date("l, d F Y h:i A"); ?></p>
+</footer>
 
-    load();
-  </script>
 </body>
 </html>

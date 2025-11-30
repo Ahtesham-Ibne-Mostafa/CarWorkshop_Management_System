@@ -32,8 +32,8 @@ if (!preg_match('/^\+?\d{6,15}$/', $phone)) {
 if (!preg_match('/^[A-Za-z0-9\- ]{3,}$/', $car_license)) {
   json(['error' => 'Invalid car license (min 3, alphanumeric).'], 400);
 }
-if (!preg_match('/^[A-Za-z0-9\-]{3,}$/', $car_engine)) {
-  json(['error' => 'Invalid engine number (min 3, alphanumeric).'], 400);
+if (!preg_match('/^[0-9]+$/', $car_engine)) {
+  json(['error' => 'Invalid engine number must be numarical digits.'], 400);
 }
 
 $pdo = db();
