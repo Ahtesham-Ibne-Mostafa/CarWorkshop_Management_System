@@ -5,6 +5,16 @@ A simple PHP–MySQL based Car Workshop Management System built to manage client
 This project is designed to run on **XAMPP** using **Apache** and **MySQL**.
 
 ---
+## 🔗 Quick Access Links
+
+Once installed, you can access the system using:
+
+### 👉 **Main Application**
+http://localhost/CarWorkshop_Management_System/index.php
+
+### 👉 **phpMyAdmin (for database import)**
+http://localhost/phpmyadmin/index.php
+
 
 ## 🚀 Features
 
