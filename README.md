@@ -4,6 +4,8 @@ A simple PHP–MySQL based Car Workshop Management System built to manage client
 
 This project is designed to run on **XAMPP** using **Apache** and **MySQL**.
 
+Project Demo: https://speedgarage.unaux.com/index.php
+
 ---
 ## 🔗 Quick Access Links
 
