@@ -76,18 +76,32 @@ if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
         filter: blur(3px); /* subtle blur */
         z-index: -2;
       }
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wrap {
+      flex: 1; /* take up remaining space */
+      max-width: 1100px;
+      margin: 100px auto 24px;
+      padding: 20px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    }
+
     footer {
-        text-align: center;
-        padding: 16px;
-        margin-top: 40px;
-        font-size: 14px;
-        color: #fff;
-        background: rgba(0,0,0,0.7); /* semi-transparent dark bar */
-        position: relative;
-        bottom: 0;
-        width: 100%;
-        border-top: 1px solid rgba(255,255,255,0.2);
-      }
+      text-align: center;
+      padding: 16px;
+      font-size: 14px;
+      color: #fff;
+      background: rgba(0,0,0,0.7);
+      width: 100%;
+    }
+
 
       body::before {
         content: "";
@@ -124,14 +138,7 @@ if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
         z-index: 1000;
       }
 
-      .wrap {
-        max-width: 1100px;
-        margin: 100px auto 24px; /* push content down below header */
-        padding: 20px;
-        background: rgba(255,255,255,0.95);
-        border-radius: 10px;
-        box-shadow: 0 4px 16px rgba(0,0,0,.2);
-      }
+
 
       /* Fix login centering */
       .centered {
@@ -180,10 +187,15 @@ if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
       <?php endif; ?>
       <h3>Admin Login</h3>
     <form method="POST" autocomplete="off">
-      <input type="text" name="username" placeholder="Username" required autocomplete="off" value="">
-      <input type="password" name="password" placeholder="Password" required autocomplete="off" value="">
-      <button type="submit" name="login">Login</button>
-    </form>
+        <!-- hidden dummy fields to trick autofill -->
+        <input type="text" style="display:none">
+        <input type="password" style="display:none">
+
+        <input type="text" name="username" placeholder="Username" required autocomplete="new-username" value="">
+        <input type="password" name="password" placeholder="Password" required autocomplete="new-password" value="">
+        <button type="submit" name="login">Login</button>
+      </form>
+
 
     </div>
   </div>
