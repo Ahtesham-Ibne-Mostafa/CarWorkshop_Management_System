@@ -84,14 +84,24 @@ if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
     }
 
     .wrap {
-      flex: 1; /* take up remaining space */
-      max-width: 1100px;
+      flex: 1;
+      width: 95%;          /* take most of the screen */
+      max-width: 1400px;   /* bigger cap so long names fit */
       margin: 100px auto 24px;
       padding: 20px;
       background: rgba(255,255,255,0.95);
       border-radius: 10px;
       box-shadow: 0 4px 16px rgba(0,0,0,.2);
     }
+
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto; /* dynamic sizing */
+    }
+
+
 
     footer {
       text-align: center;
@@ -158,11 +168,21 @@ if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
     .link-btn { background:#fff; color:#0d6efd; padding:6px 12px; border-radius:6px; text-decoration:none; font-weight:600; border:1px solid #0d6efd; }
     .notice { margin:12px 0; padding:10px; border-radius:8px; background:#e7fff0; color:#065f46; }
     .error { background:#ffe7e7; color:#b00020; }
-    table { width:100%; border-collapse:collapse; margin-top:20px; }
+        table th:nth-child(8),
+                table td:nth-child(8) {
+                  width: 200px;       /* widen the Slot column */
+                }
+
+
     th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
     th { background:#f3f4f6; }
     .actions { display:flex; gap:8px; }
     .delete-btn { background:#dc2626; }
+    td {
+          word-wrap: break-word;
+          white-space: normal;
+        }
+
   </style>
 </head>
 <body>
@@ -234,13 +254,14 @@ if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
               <td><?= htmlspecialchars($a['car_engine']) ?></td>
               <td><input type="date" name="appointment_date" value="<?= $a['appointment_date'] ?>"></td>
               <td>
-                <select name="slot">
-                  <option value="9-11" <?= $a['slot']=='9-11'?'selected':'' ?>>9:00 – 11:00</option>
-                  <option value="11.30-1.30" <?= $a['slot']=='11.30-1.30'?'selected':'' ?>>11:30 – 1:30</option>
-                  <option value="2-4" <?= $a['slot']=='2-4'?'selected':'' ?>>2:00 – 4:00</option>
-                  <option value="4.30-6.30" <?= $a['slot']=='4.30-6.30'?'selected':'' ?>>4:30 – 6:30</option>
-                </select>
-              </td>
+                  <select name="slot" style="min-width:180px;">
+                    <option value="9-11" <?= $a['slot']=='9-11'?'selected':'' ?>>9:00 – 11:00</option>
+                    <option value="11.30-1.30" <?= $a['slot']=='11.30-1.30'?'selected':'' ?>>11:30 – 1:30</option>
+                    <option value="2-4" <?= $a['slot']=='2-4'?'selected':'' ?>>2:00 – 4:00</option>
+                    <option value="4.30-6.30" <?= $a['slot']=='4.30-6.30'?'selected':'' ?>>4:30 – 6:30</option>
+                  </select>
+                </td>
+
               <td>
                 <select name="mechanic_id">
                   <?php
@@ -281,3 +302,4 @@ if (isset($_POST['delete_appt']) && isset($_SESSION['admin_id'])) {
 
 </body>
 </html>
+
